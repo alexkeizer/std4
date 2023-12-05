@@ -7,6 +7,7 @@ Authors: Joe Hendrix, Wojciech Nawrocki, Leonardo de Moura, Mario Carneiro, Alex
 import Std.Data.Nat.Init.Lemmas
 import Std.Data.Fin.Basic
 import Std.Data.Int.Basic
+import Std.Data.List.Basic
 import Std.Tactic.Alias
 
 namespace Std
@@ -490,3 +491,13 @@ theorem append_ofBool (msbs : BitVec w) (lsb : Bool) :
 theorem ofBool_append (msb : Bool) (lsbs : BitVec w) :
     ofBool msb ++ lsbs = (cons msb lsbs).cast (Nat.add_comm ..) :=
   rfl
+
+/-- Convert a bitvector to a list using little-endian order.
+That is, the head of the list is the least-significant bit -/
+def toLEList (x : BitVec w) : List Bool :=
+  List.ofFn fun (i : Fin w) => x.getLsb i
+
+/-- Convert a bitvector to a list using big-endian order.
+That is, the head of the list is the most-significant bit -/
+def toBEList (x : BitVec w) : List Bool :=
+  List.ofFn fun (i : Fin w) => x.getMsb i
