@@ -112,6 +112,24 @@ def intCast? (n : Expr) : Option Int :=
   | (``Nat.cast, #[_, _, n]) => n.nat?
   | _ => n.int?
 
+/-- Match on the two ways of spelling successor that are defeq : `n+1`, `n.succ`.
+To add support for (1+n),
+  we would need to use a different theorem to rewrite 2^(1+n) = 2^n + 2^n,
+  or to add an extra proof that 2^(1+n) = 2^(n+1).
+While either of these can be done, we choose to support only the simp normal form and its
+  defeq equivalent, and we expect users to rewrite terms to simp normal form before running
+  `omega`. -/
+def succ? (e : Expr) : Option Expr :=
+  match e.getAppFnArgs with
+  | (``Nat.succ, #[n]) => some n
+  | (``HAdd.hAdd, #[_, _, _, _, a, b]) => do
+     if b == toExpr (1 : Nat)
+     then some a
+     else none
+  | _ => none
+
+
+
 theorem ite_disjunction {α : Type u} {P : Prop} [Decidable P] {a b : α} :
     (P ∧ (if P then a else b) = a) ∨ (¬ P ∧ (if P then a else b) = b) := by
   by_cases P <;> simp_all
@@ -131,8 +149,8 @@ def analyzeAtom (e : Expr) : OmegaM (HashSet Expr) := do
     let mut r := {Expr.app (.const ``Int.ofNat_nonneg []) e'}
     match e'.getAppFnArgs with
     | (``HPow.hPow, #[_, _, _, _, b, exp]) =>
-      match b == toExpr (2 : Nat), exp.getAppFnArgs with
-      | true, (``Nat.succ, #[n]) =>
+      match b == toExpr (2 : Nat), succ? exp with
+      | true, .some n =>
         -- 2^(Nat.succ n) = 2^n + 2^n
         r := r.insert (mkApp (.const ``Int.two_pow_succ_eq_add []) n)
         pure ()
