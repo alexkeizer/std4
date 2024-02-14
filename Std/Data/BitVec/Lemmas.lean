@@ -118,7 +118,7 @@ private theorem lt_two_pow_of_le {x m n : Nat} (lt : x < 2 ^ m) (le : m ≤ n) :
     simp [h]
 
 @[simp]
-theorem BitVec.ofInt_ofNat : BitVec.ofInt w (no_index (OfNat.ofNat n : Int)) = BitVec.ofNat w n := by
+theorem ofInt_ofNat : BitVec.ofInt w (no_index (OfNat.ofNat n : Int)) = BitVec.ofNat w n := by
   simp [BitVec.ofInt]
 
 /-! ### cast -/
