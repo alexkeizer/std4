@@ -386,4 +386,6 @@ example (x y z i : Nat) (hz : z ≤ 1) : x % 2 ^ i + y % 2 ^ i + z < 2 * 2^ i :=
 
 example {w : Nat} (h : x  < 2^(Nat.succ w)) : x < 2^w + 2^w := by omega
 
+example {w : Nat} (h : x  < 2*2^w) : x < 2^w + 2^w := by omega
+
 example {w : Nat} (h : x  < 2^(w+1)) : x < 2^w + 2^w := by omega
