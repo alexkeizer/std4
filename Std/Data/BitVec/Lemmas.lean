@@ -449,6 +449,12 @@ theorem sub_def {n} (x y : BitVec n) : x - y = .ofNat n (x.toNat + (2^n - y.toNa
   · simp
   · exact Nat.le_of_lt x.isLt
 
+protected theorem sub_assoc (x y z : BitVec n) : x - y - z = x - (y - z) := by
+  apply eq_of_toFin_eq ; simp
+
+protected theorem sub_comm (x y : BitVec n) : x - y = y - x := by
+  simp [sub_def, Nat.sub_comm]
+
 @[simp] theorem toNat_neg (x : BitVec n) : (- x).toNat = (2^n - x.toNat) % 2^n := by
   simp [Neg.neg, BitVec.neg]
 

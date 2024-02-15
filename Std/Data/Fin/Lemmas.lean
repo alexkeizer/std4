@@ -783,6 +783,14 @@ theorem coe_sub_iff_lt {a b : Fin n} : (↑(a - b) : Nat) = n + a - b ↔ a < b 
     rw [Nat.mod_eq_of_lt]
     all_goals omega
 
+protected theorem sub_assoc (x y z : Fin n) : x - y - z = x - (y - z) := by
+  simp only [sub_def, mk.injEq, Nat.mod_add_mod]
+  simp?
+  omega
+
+protected theorem sub_comm (x y : Fin n) : x - y = y - x := by
+  sorry
+
 /-! ### mul -/
 
 theorem val_mul {n : Nat} : ∀ a b : Fin n, (a * b).val = a.val * b.val % n
