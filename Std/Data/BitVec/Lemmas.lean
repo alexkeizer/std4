@@ -82,6 +82,23 @@ theorem eq_of_getMsb_eq {x y : BitVec w}
 theorem eq_of_toFin_eq : ∀ {x y : BitVec w}, x.toFin = y.toFin → x = y
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+theorem eq_of_toInt_eq {x y : BitVec w} : x.toInt = y.toInt → x = y := by
+  intro h
+  simp only [BitVec.toInt, Int.ofNat_eq_coe, ← Int.subNatNat_eq_coe, Int.subNatNat_of_lt x.toNat_lt,
+    Int.subNatNat_of_lt y.toNat_lt] at h
+  apply eq_of_toNat_eq
+  cases hxm : x.msb <;> cases hym : y.msb <;> (simp only [↓reduceIte, hxm, hym] at h)
+  · apply Int.ofNat_inj.mp h
+  · simp only [Int.negSucc.injEq] at h
+    have two_pow_eq : 2 ^ w = 2 ^ w - y.toNat + x.toNat :=
+      Nat.eq_add_of_sub_eq (Nat.le_of_lt x.toNat_lt) <|
+        Nat.pred_inj (Nat.sub_pos_of_lt x.toNat_lt) (Nat.sub_pos_of_lt y.toNat_lt) h
+    have : 2 ^ w = 2 ^ w - x.toNat + y.toNat := by
+      conv =>
+        rhs
+        rw [two_pow_eq, Nat.add_sub_cancel, Nat.sub_add_cancel (Nat.le_of_lt y.toNat_lt)]
+    omega
+
 @[simp] theorem toNat_ofBool (b : Bool) : (ofBool b).toNat = b.toNat := by
   cases b <;> rfl
 
