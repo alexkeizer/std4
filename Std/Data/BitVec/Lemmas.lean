@@ -404,6 +404,18 @@ theorem getMsb_rev (x : BitVec w) (i : Fin w) :
   congr
   omega
 
+theorem msb_eq_getLsb_last (x : BitVec w) :
+    x.msb = x.getLsb (w - 1) := by
+  simp [BitVec.msb, getMsb, getLsb]
+  rcases w  with rfl | w
+  · simp [BitVec.eq_nil x]
+  · simp
+
+theorem getLsb_last (x : BitVec (Nat.succ w)) :
+    x.getLsb w = decide (2 ^ w ≤ x.toNat) := by
+  change getLsb x (w.succ - 1) = _
+  rw [← msb_eq_getLsb_last, msb_eq_decide]
+
 /-! ### cons -/
 
 @[simp] theorem toNat_cons (b : Bool) (x : BitVec w) :
