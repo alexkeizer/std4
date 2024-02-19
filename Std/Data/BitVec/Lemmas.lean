@@ -236,6 +236,9 @@ private theorem allOnes_def :
   else
     simp [h]
 
+@[simp] theorem toFin_allOnes : (allOnes w).toFin = Fin.last' (Nat.two_pow_pos _) := by
+  apply Fin.eq_of_val_eq; simp
+
 /-! ### or -/
 
 @[simp] theorem toNat_or (x y : BitVec v) :
@@ -446,6 +449,9 @@ protected theorem add_comm (x y : BitVec n) : x + y = y + x := by
 
 @[simp] protected theorem zero_add (x : BitVec n) : 0#n + x = x := by simp [add_def]
 
+/-- Adding a bitvector to its own complement yields the all ones bitpattern -/
+@[simp] theorem add_not_self (x : BitVec w) : x + ~~~x = allOnes w := by
+  apply eq_of_toFin_eq; simp [Fin.add_rev_eq_last', toFin_allOnes]
 
 /-! ### sub/neg -/
 
@@ -491,6 +497,10 @@ theorem add_sub_cancel (x y : BitVec w) : x + y - y = x := by
   have y_toNat_le := Nat.le_of_lt y.toNat_lt
   rw [toNat_sub, toNat_add, Nat.mod_add_mod, Nat.add_assoc, ← Nat.add_sub_assoc y_toNat_le,
     Nat.add_sub_cancel_left, Nat.add_mod_right, toNat_mod_cancel]
+
+/-- Subtracting `x` from the all ones bitvector is equivalent to taking its complement -/
+theorem allOnes_sub_eq_not (x : BitVec w) : allOnes w - x = ~~~x := by
+  rw [← add_not_self x, BitVec.add_comm, add_sub_cancel]
 
 /-! ### mul -/
 
