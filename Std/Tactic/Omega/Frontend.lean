@@ -80,6 +80,18 @@ def mkAtomLinearCombo (e : Expr) : OmegaM (LinearCombo × OmegaM Expr × HashSet
 local macro_rules
   | `(mkAppN $f #[$xs,*]) => (xs.getElems.foldlM (fun x e => `(Expr.app $x $e)) f : MacroM Term)
 
+
+/-- Match on the two ways of spelling successor that are defeq : `n+1`, `n.succ`.
+TODO: support b^(1+n), add a theorem to rewrite b^(1+n) = b^n*b. -/
+def succ? (e : Expr) : Option Expr :=
+  match e.getAppFnArgs with
+  | (``Nat.succ, #[n]) => some n
+  | (``HAdd.hAdd, #[_, _, _, _, a, b]) => do
+     if b == toExpr (1 : Nat)
+     then some a
+     else none
+  | _ => none
+
 mutual
 
 /--
@@ -203,6 +215,13 @@ partial def asLinearComboImpl (e : Expr) : OmegaM (LinearCombo × OmegaM Expr ×
       rewrite e (mkApp2 (.const ``Int.max_def []) a b)
     else
       mkAtomLinearCombo e
+
+  | (``HPow.hPow, #[_, _, _, _, b, exp]) =>
+    match intCast? b with /- only perform rewrite b^(e.succ) = b^e*e when b is a constant -/
+    | .none => mkAtomLinearCombo e
+    | .some _bint => match succ? exp with /- match for (e+1) and (e.succ) -/
+      | .some exppred => rewrite e (mkApp2 (.const ``Int.pow_succ []) b exppred)
+      | .none => mkAtomLinearCombo e
   | (``Nat.cast, #[.const ``Int [], i, n]) =>
     match n with
     | .fvar h =>
@@ -213,6 +232,7 @@ partial def asLinearComboImpl (e : Expr) : OmegaM (LinearCombo × OmegaM Expr ×
         mkAtomLinearCombo e
     | _ => match n.getAppFnArgs with
     | (``Nat.succ, #[n]) => rewrite e (.app (.const ``Int.ofNat_succ []) n)
+    | (``HPow.hPow, #[_, _, _, _, b, exp]) => rewrite e (mkApp2 (.const ``Int.ofNat_pow []) b exp)
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => rewrite e (mkApp2 (.const ``Int.ofNat_add []) a b)
     | (``HMul.hMul, #[_, _, _, _, a, b]) => rewrite e (mkApp2 (.const ``Int.ofNat_mul []) a b)
     | (``HDiv.hDiv, #[_, _, _, _, a, b]) => rewrite e (mkApp2 (.const ``Int.ofNat_ediv []) a b)

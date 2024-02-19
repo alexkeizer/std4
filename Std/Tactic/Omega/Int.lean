@@ -28,6 +28,8 @@ theorem pos_pow_of_pos (a : Int) (b : Nat) (h : 0 < a) : 0 < a ^ b := by
   rw [Int.eq_natAbs_of_zero_le (Int.le_of_lt h), ← Int.ofNat_zero, ← Int.ofNat_pow, Int.ofNat_lt]
   exact Nat.pos_pow_of_pos _ (Int.natAbs_pos.mpr (Int.ne_of_gt h))
 
+theorem pow_succ (b : Int) (e : Nat) : b ^ e.succ = (b ^ e) * b := rfl
+
 theorem ofNat_pos {a : Nat} : 0 < (a : Int) ↔ 0 < a := by
   rw [← Int.ofNat_zero, Int.ofNat_lt]
 
