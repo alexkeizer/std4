@@ -170,6 +170,16 @@ theorem val_lt_last {i : Fin (n + 1)} : i ≠ last n → (i : Nat) < n :=
 @[simp] theorem rev_zero (n : Nat) : rev 0 = last n := by
   rw [← rev_rev (last _), rev_last]
 
+/-- Rewrite `@last' (n+1) _` to `last n` -/
+theorem last'_eq_last (n : Nat) : last' (by simp) = last n := rfl
+
+@[simp]
+theorem val_last' {h : 0 < n} : (Fin.last' h).val = n-1 := by
+  cases n
+  · contradiction
+  · simp [last'_eq_last]
+
+
 /-! ### addition, numerals, and coercion from Nat -/
 
 @[simp] theorem val_one (n : Nat) : (1 : Fin (n + 2)).val = 1 := rfl
@@ -734,6 +744,12 @@ theorem addCases_right {m n : Nat} {motive : Fin (m + n) → Sort _} {left right
 
 /-! ### add -/
 
+@[simp] theorem zero_add (i : Fin (n+1)) : 0 + i = i := by
+  apply eq_of_val_eq; simp [val_add, Nat.mod_eq_of_lt]
+
+theorem add_assoc (i j k : Fin n) : i + j + k = i + (j + k) := by
+  simp [← val_inj, val_add, Nat.add_assoc]
+
 @[simp] theorem ofNat'_add (x : Nat) (lt : 0 < n) (y : Fin n) :
     Fin.ofNat' x lt + y = Fin.ofNat' (x + y.val) lt := by
   apply Fin.eq_of_val_eq
@@ -743,6 +759,12 @@ theorem addCases_right {m n : Nat} {motive : Fin (m + n) → Sort _} {left right
     x + Fin.ofNat' y lt = Fin.ofNat' (x.val + y) lt := by
   apply Fin.eq_of_val_eq
   simp [Fin.ofNat', Fin.add_def]
+
+theorem add_rev_eq_last' (i : Fin n) : i + i.rev = Fin.last' i.pos := by
+  apply eq_of_val_eq
+  rw [Fin.val_add, Fin.val_rev, Fin.val_last', Nat.sub_add_eq, ← Nat.add_sub_assoc,
+    ← Nat.add_sub_assoc, Nat.add_sub_cancel_left, Nat.mod_eq_of_lt]
+  <;> (have := i.pos; omega)
 
 /-! ### sub -/
 
