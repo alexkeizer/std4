@@ -541,3 +541,31 @@ protected theorem lt_of_le_ne (x y : BitVec n) (h1 : x <= y) (h2 : ¬ x = y) : x
   let ⟨y, lt⟩ := y
   simp
   exact Nat.lt_of_le_of_ne
+
+
+/-! ### toInt / ofInt -/
+
+theorem ofInt_toInt (x : BitVec w) : BitVec.ofInt w x.toInt = x := by
+  simp only [BitVec.ofInt, BitVec.toInt, Int.ofNat_eq_coe]
+  cases hm : x.msb <;> simp only [↓reduceIte, ofNat_toNat]
+  · apply truncate_eq
+  · rcases w with _|w
+    · rw [eq_nil x]; rfl
+    · have : 2 ^ w ≤ x.toNat := by simpa [BitVec.msb_eq_decide] using hm
+      simp only [← Int.subNatNat_eq_coe, Int.subNatNat_of_lt x.toNat_lt]
+      apply eq_of_toNat_eq
+      rw [toNat_not, toNat_ofNat,
+        ← Nat.sub_succ, Nat.mod_eq_of_lt (Nat.sub_lt (Nat.two_pow_pos _) (Nat.zero_lt_succ _)),
+        show x.toNat.succ = x.toNat + 1 from rfl,
+        Nat.sub_sub, Nat.add_comm 1]
+      sorry
+
+#check Int.pow
+
+private theorem coe_nat_pow (m n : Nat) : ↑(m ^ n : Nat) = ((m : Int) ^ n) := by
+  induction m <;> sorry
+
+theorem toInt_ofInt (w : Nat) (z : Int) : (BitVec.ofInt w z).toInt = z % 2 ^ w := by
+  simp only [BitVec.toInt, BitVec.ofInt, Int.ofNat_eq_coe]
+  rcases z with z | z <;> simp
+  sorry
