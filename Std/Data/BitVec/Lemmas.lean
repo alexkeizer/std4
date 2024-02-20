@@ -496,7 +496,7 @@ theorem add_sub_cancel (x y : BitVec w) : x + y - y = x := by
 
 theorem mul_def {n} {x y : BitVec n} : x * y = (ofFin <| x.toFin * y.toFin) := by rfl
 
-theorem toNat_mul (x y : BitVec n) : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ n := rfl
+@[simp] theorem toNat_mul (x y : BitVec n) : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ n := rfl
 @[simp] theorem toFin_mul (x y : BitVec n) : (x * y).toFin = (x.toFin * y.toFin) := rfl
 
 theorem mul_comm (x y : BitVec w) : x * y = y * x := by
@@ -506,6 +506,16 @@ instance : Std.Commutative (fun (x y : BitVec w) => x * y) := ⟨mul_comm⟩
 theorem mul_assoc (x y z : BitVec w) : x * y * z = x * (y * z) := by
   apply eq_of_toFin_eq; simpa using Fin.mul_assoc ..
 instance : Std.Associative (fun (x y : BitVec w) => x * y) := ⟨mul_assoc⟩
+
+theorem mul_one (x : BitVec w) : x * 1#w = x := by
+  cases w
+  · apply Subsingleton.elim
+  · apply eq_of_toNat_eq; simp [Nat.mod_eq_of_lt]
+theorem one_mul (x : BitVec w) : 1#w * x = x := by
+  rw [mul_comm, mul_one]
+
+instance : Std.LawfulCommIdentity (fun (x y : BitVec w) => x * y) (1#w) where
+  right_id := mul_one
 
 /-! ### le and lt -/
 
