@@ -807,6 +807,12 @@ protected theorem mul_zero (k : Fin (n + 1)) : k * 0 = 0 := by simp [ext_iff, mu
 protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
   simp [ext_iff, mul_def]
 
+protected theorem mul_assoc (a b c : Fin n) : a * b * c = a * (b * c) := by
+  apply eq_of_val_eq
+  simp only [val_mul]
+  rw [← Nat.mod_eq_of_lt a.isLt, ← Nat.mod_eq_of_lt b.isLt, ← Nat.mod_eq_of_lt c.isLt]
+  simp only [← Nat.mul_mod, Nat.mul_assoc]
+
 end Fin
 
 namespace USize

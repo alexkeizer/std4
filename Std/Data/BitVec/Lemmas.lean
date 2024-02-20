@@ -499,6 +499,12 @@ theorem mul_def {n} {x y : BitVec n} : x * y = (ofFin <| x.toFin * y.toFin) := b
 theorem toNat_mul (x y : BitVec n) : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ n := rfl
 @[simp] theorem toFin_mul (x y : BitVec n) : (x * y).toFin = (x.toFin * y.toFin) := rfl
 
+theorem mul_comm (x y : BitVec w) : x * y = y * x := by
+  apply eq_of_toFin_eq; simpa using Fin.mul_comm ..
+
+theorem mul_assoc (x y z : BitVec w) : x * y * z = x * (y * z) := by
+  apply eq_of_toFin_eq; simpa using Fin.mul_assoc ..
+
 /-! ### le and lt -/
 
 theorem le_def (x y : BitVec n) :
