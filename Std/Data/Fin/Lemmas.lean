@@ -762,9 +762,10 @@ theorem add_assoc (i j k : Fin n) : i + j + k = i + (j + k) := by
 
 theorem add_rev_eq_last' (i : Fin n) : i + i.rev = Fin.last' i.pos := by
   apply eq_of_val_eq
+  have := i.pos
   rw [Fin.val_add, Fin.val_rev, Fin.val_last', Nat.sub_add_eq, ← Nat.add_sub_assoc,
     ← Nat.add_sub_assoc, Nat.add_sub_cancel_left, Nat.mod_eq_of_lt]
-  <;> (have := i.pos; omega)
+  <;> omega
 
 /-! ### sub -/
 
