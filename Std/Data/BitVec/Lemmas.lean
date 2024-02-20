@@ -501,9 +501,11 @@ theorem toNat_mul (x y : BitVec n) : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ n
 
 theorem mul_comm (x y : BitVec w) : x * y = y * x := by
   apply eq_of_toFin_eq; simpa using Fin.mul_comm ..
+instance : Std.Commutative (fun (x y : BitVec w) => x * y) := ⟨mul_comm⟩
 
 theorem mul_assoc (x y z : BitVec w) : x * y * z = x * (y * z) := by
   apply eq_of_toFin_eq; simpa using Fin.mul_assoc ..
+instance : Std.Associative (fun (x y : BitVec w) => x * y) := ⟨mul_assoc⟩
 
 /-! ### le and lt -/
 
