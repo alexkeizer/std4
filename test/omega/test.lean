@@ -389,6 +389,6 @@ example (x e : Nat) (hx : x < 2^(e+1)) : x < 2^e *2 := by omega
 example (x e : Nat) (hx : x < 2^(e.succ)) : x < 2^e *2 := by omega
 
 -- Check that this works for integer base.
-example (x : Int) (e : Nat) (hx : x < 2^(e+1)) : x < 2^e *2 := by omega
+example (x : Int) (e : Nat) (hx : x < (2 : Int)^(e+1)) : x < 2^e *2 := by omega
 
 example (x y z i : Nat) (hz : z ≤ 1) : x % 2 ^ i + y % 2 ^ i + z < 2 * 2^ i := by omega
